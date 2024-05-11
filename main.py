@@ -3,6 +3,10 @@ import numpy as np
 from math import *
 from shapes import *
 
+# -----------------------------------------
+# Contants for the screen and key binds
+# -----------------------------------------
+
 # WIDTH, HEIGHT = 1540, 1000
 WIDTH, HEIGHT = 800, 600
 WHITE = (255,255,255)
@@ -18,7 +22,6 @@ screen = pygame.display.set_mode((WIDTH, HEIGHT))
 
 shape = Cube()
 points = shape.get_points()
-print(points)
 surfaces = shape.get_surfaces()
 connections = shape.get_connections()
 
@@ -37,11 +40,9 @@ projected_points = [
 
 clock = pygame.time.Clock()
 
-def connect_points(i, j, points):
-    pygame.draw.line(screen, WHITE, (points[i][0], points[i][1]), (points[j][0], points[j][1]))
-
-
-# Main flow
+# -----------------------------------------
+# Main flow of the program
+# -----------------------------------------
 while True:
     clock.tick(60)
     for event in pygame.event.get():
@@ -92,23 +93,31 @@ while True:
         
     screen.fill(BLACK)
 
-    i = 0
-        
-    for point in points:
-        rotated_points[i] = np.dot(rotation_x, point.reshape(3,1))
-        rotated_points[i] = np.dot(rotation_y, rotated_points[i])
-        rotated_points[i] = np.dot(rotation_z, rotated_points[i])
-        projected_2d = np.dot(projection_matrix, rotated_points[i])
+    # -----------------------------------------
+    # Draw each vertex
+    # -----------------------------------------
+    for index, point in enumerate(points):
+        rotated_points[index] = np.dot(rotation_x, point.reshape(3,1))
+        rotated_points[index] = np.dot(rotation_y, rotated_points[index])
+        rotated_points[index] = np.dot(rotation_z, rotated_points[index])
+        projected_2d = np.dot(projection_matrix, rotated_points[index])
 
-        x = int(projected_2d[0][0] * scale) + circle_pos[0]
-        y = int(projected_2d[1][0] * scale) + circle_pos[1]
-        projected_points[i] = [x,y]
-        # pygame.draw.circle(screen, CYAN, (x,y), 5)
-        i += 1
+        x = int(projected_2d.item(0) * scale) + circle_pos[0]
+        y = int(projected_2d[1].item(0) * scale) + circle_pos[1]
+        projected_points[index] = [x,y]
+        pygame.draw.circle(screen, CYAN, (x,y), 5)
     
-    # for connection in connections:
-    #     connect_points(connection[0], connection[1], projected_points)
+    # -----------------------------------------
+    # Connect the vertices
+    # -----------------------------------------
+    for connection in connections:
+        first_point = (projected_points[connection[0]][0], projected_points[connection[0]][1])
+        second_point = (projected_points[connection[1]][0], projected_points[connection[1]][1])
+        pygame.draw.line(screen, WHITE, first_point, second_point)
     
+    # -----------------------------------------
+    # Draw the surface and its shade
+    # -----------------------------------------
     for surf in range(1, len(surfaces) + 1):
         # Get the surface normal
         surface_normal = np.cross(rotated_points[surfaces[surf - 1][1]].flatten() - rotated_points[surfaces[surf - 1][0]].flatten(),
