@@ -21,14 +21,14 @@ class Cube(Polyhedron):
     points, connections = [], []
 
     def __init__(self):
-        self.points.append(np.matrix([-1, -1, 1]))
-        self.points.append(np.matrix([1, -1, 1]))
-        self.points.append(np.matrix([1,  1, 1]))
-        self.points.append(np.matrix([-1, 1, 1]))
-        self.points.append(np.matrix([-1, -1, -1]))
-        self.points.append(np.matrix([1, -1, -1]))
-        self.points.append(np.matrix([1, 1, -1]))
-        self.points.append(np.matrix([-1, 1, -1]))
+        self.points.append(np.matrix([-1.0, -1.0, 1.0]))
+        self.points.append(np.matrix([1.0, -1.0, 1.0]))
+        self.points.append(np.matrix([1.0,  1.0, 1.0]))
+        self.points.append(np.matrix([-1.0, 1.0, 1.0]))
+        self.points.append(np.matrix([-1.0, -1.0, -1.0]))
+        self.points.append(np.matrix([1.0, -1.0, -1.0]))
+        self.points.append(np.matrix([1.0, 1.0, -1.0]))
+        self.points.append(np.matrix([-1.0, 1.0, -1.0]))
 
         self.surfaces = [
             [0, 1, 2, 3],  # Front

@@ -60,6 +60,9 @@ while True:
                 scale -= 5
 
     keys = pygame.key.get_pressed()
+    if True in keys:
+        # ---------------
+    # Rotating
     if keys[pygame.K_RIGHT]:
         y_angle += 0.01
     if keys[pygame.K_LEFT]:
@@ -73,6 +76,27 @@ while True:
     if keys[pygame.K_LCTRL]:
         z_angle -= 0.01
 
+    # Positioning
+    if keys[pygame.K_a]:
+        for point in points:
+            point[0,0] -= 0.05
+    if keys[pygame.K_d]:
+        for point in points:
+            point[0,0] += 0.05
+    if keys[pygame.K_s]:
+        for point in points:
+            point[0,1] -= 0.05
+    if keys[pygame.K_w]:
+        for point in points:
+            point[0,1] += 0.05
+    if keys[pygame.K_q]:
+        for point in points:
+            point[0,2] -= 0.05
+    if keys[pygame.K_e]:
+        for point in points:
+            point[0,2] += 0.05
+
+    # Rotation matrices
     rotation_x = np.matrix([
         [1, 0, 0],
         [0, cos(x_angle), -sin(x_angle)],
