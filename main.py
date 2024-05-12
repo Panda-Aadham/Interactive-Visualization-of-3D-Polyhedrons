@@ -20,7 +20,7 @@ circle_pos = [WIDTH/2, HEIGHT/2]
 pygame.display.set_caption("3D Visualization of Shapes in Python")
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 
-shape = Cube2()
+shape = Smart_Cube()
 points = shape.get_points()
 surfaces = shape.get_surfaces()
 connections = shape.get_connections()
