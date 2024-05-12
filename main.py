@@ -20,7 +20,7 @@ circle_pos = [WIDTH/2, HEIGHT/2]
 pygame.display.set_caption("3D Visualization of Shapes in Python")
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 
-shape = Cube()
+shape = Cube2()
 points = shape.get_points()
 surfaces = shape.get_surfaces()
 connections = shape.get_connections()
@@ -137,15 +137,15 @@ while True:
         x = int(projected_2d.item(0) * scale) + circle_pos[0]
         y = int(projected_2d[1].item(0) * scale) + circle_pos[1]
         projected_points[index] = [x,y]
-        pygame.draw.circle(screen, CYAN, (x,y), 5)
+        # pygame.draw.circle(screen, CYAN, (x,y), 5)
     
     # -----------------------------------------
     # Connect the vertices
     # -----------------------------------------
-    for connection in connections:
-        first_point = (projected_points[connection[0]][0], projected_points[connection[0]][1])
-        second_point = (projected_points[connection[1]][0], projected_points[connection[1]][1])
-        pygame.draw.line(screen, WHITE, first_point, second_point)
+    # for connection in connections:
+    #     first_point = (projected_points[connection[0]][0], projected_points[connection[0]][1])
+    #     second_point = (projected_points[connection[1]][0], projected_points[connection[1]][1])
+    #     pygame.draw.line(screen, WHITE, first_point, second_point)
     
     # -----------------------------------------
     # Draw the surface and its shade

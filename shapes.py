@@ -2,24 +2,49 @@ import numpy as np
 
 PHI = (1 + 5 ** 0.5) / 2
 
+class Vertex:
+    id = 0
+    postion = []
+
+    def __init__(self, id, position):
+        self.position = position
+        self.id = id
+
+    def get_id(self):
+        return self.id
+
+    def get_coordinates(self):
+        return self.position
+
 class Polyhedron:
-    def __init__(self):
-        self.points = []
-        self.surfaces = []
-        self.connections = []
+    points = []
+    surfaces = []
+    connections = []
 
     def get_points(self):
-        return self.points
+        vertices = []
+        for point in self.points:
+            vertices.append(point.get_coordinates())
+        return vertices
     
     def get_connections(self):
         return self.connections
     
     def get_surfaces(self):
         return self.surfaces
+    
+    def get_permutations(self, points):
+        permutations = []
+        # Loop to obtain all permuations
+        for i in range(2**3):
+            indexes = bin(i)[2:]
+            bit_indexes = [i for i, bit in enumerate(indexes[::-1]) if bit == '1']
+            permutations.append([point * (-1 if i in bit_indexes else 1) for i, point in enumerate(points)])
+        # Return unique lists within the permuatations
+        return [list(t) for t in set(tuple(sublist) for sublist in permutations)]
+
 
 class Cube(Polyhedron):
-    points, connections = [], []
-
     def __init__(self):
         self.points.append(np.matrix([-1.0, -1.0, 1.0]))
         self.points.append(np.matrix([1.0, -1.0, 1.0]))
@@ -31,22 +56,73 @@ class Cube(Polyhedron):
         self.points.append(np.matrix([-1.0, 1.0, -1.0]))
 
         self.surfaces = [
+            [1, 5, 6, 2],  # Right
+            [4, 0, 3, 7],  # Left
+            [6, 7, 3, 2],   # Top
+            [1, 0, 4, 5],  # Bottom
             [0, 1, 2, 3],  # Front
             [5, 4, 7, 6],  # Back
-            [4, 0, 3, 7],  # Left
-            [1, 5, 6, 2],  # Right
-            [1, 0, 4, 5],  # Bottom
-            [6, 7, 3, 2]   # Top
         ]
+        
+        # 0 -> 4
+        # 1 -> 3
+        # 2 -> 7
+        # 3 -> 1
+        # 4 -> 2
+        # 5 -> 5
+        # 6 -> 6
+        # 7 -> 0
 
         for p in range(4):
             self.connections.append([p, (p+1) % 4])
             self.connections.append([p+4, ((p+1) % 4) + 4])
             self.connections.append([p, (p+4)])
 
-class Pyramid(Polyhedron):
-    points, connections = [], []
+class Smart_Cube(Polyhedron):
+    def __init__(self):
+        points = self.get_permutations([1] * 3)
+        for id, point in enumerate(points):
+            newPoint = Vertex(id, np.matrix(point))
+            self.points.append(newPoint)
 
+        axis_points = [None, None]
+        for axis in range(3):
+            # Filter the vertices by the current axis
+            axis_points[0] = [vertex for vertex in points if vertex[axis] == 1]
+            axis_points[1] = [vertex for vertex in points if vertex[axis] == -1]
+            for sign in range(2):
+                # Get index of the axis to seperate connection pairs
+                diff_axis_index = axis + 1 if (axis + 1) < 3 else 0
+                sorted_points = sorted(axis_points[sign], key=lambda x: x[diff_axis_index])
+                self.connections.append([points.index(sorted_points[0]), points.index(sorted_points[1])])
+                self.connections.append([points.index(sorted_points[2]), points.index(sorted_points[3])])
+                # Create the surfaces
+                surface = [[1] * 3] if sign == 0 else [[-1] * 3]
+                first_axis = (axis + 1 if axis + 1 < 3 else 0) if sign == 0 else (axis - 1 if axis - 1 > -1 else 2)
+                second_axis = 3 - (axis + first_axis)
+                surface.append(surface[0].copy())
+                surface[1][first_axis] *= -1
+                surface.append(surface[1].copy())
+                surface[2][second_axis] *= -1
+                surface.append(surface[2].copy())
+                surface[3][first_axis] *= -1
+                surfaces = []
+                for pos in surface:
+                    surfaces.append(points.index(pos))
+                self.surfaces.append(surfaces)
+
+        # self.surfaces = [
+        #     [3, 5, 6, 7],  # Right
+        #     [2, 4, 1, 0],  # Left
+        #     [6, 0, 1, 7],   # Top
+        #     [2, 5, 3, 4],  # Bottom
+        #     [4, 3, 7, 1],  # Front
+        #     [5, 2, 0, 6],  # Back
+        # ]
+        for surface in self.surfaces:
+            print(points[surface[0]], points[surface[1]], points[surface[2]], points[surface[3]])
+
+class Pyramid(Polyhedron):
     def __init__(self):
         self.points.append(np.matrix([0, -1, 0]))
         self.points.append(np.matrix([-1, 1, 1]))
@@ -69,8 +145,6 @@ class Pyramid(Polyhedron):
             self.connections.append([(i*3)-2, 3])
 
 class Icosahedron(Polyhedron):
-    points, connections, surfaces = [], [], []
-
     def __init__(self):
         vertices = [
             [PHI, 1, 0], [PHI, -1, 0], [-PHI, 1, 0], [-PHI, -1, 0],
@@ -99,3 +173,13 @@ class Icosahedron(Polyhedron):
             [10, 5, 7], [10, 7, 11], [10, 11, 9], [10, 9, 8], [10, 8, 4]
         ]
         return self.surfaces
+
+class Icosahedron2(Polyhedron):
+    def __init__(self):
+        for i in range(3):
+            points = [0] * 3
+            points[i] = PHI
+            points[0 if i==2 else i+1] = 1
+            all_points = self.get_permutations(points)
+            for list in all_points:
+                self.points.append(np.matrix(list))
