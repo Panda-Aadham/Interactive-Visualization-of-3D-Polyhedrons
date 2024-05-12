@@ -38,30 +38,10 @@ projected_points = [
     [n,n] for n in range(len(points))
 ]
 
-clock = pygame.time.Clock()
-
 # -----------------------------------------
-# Main flow of the program
+# Shape controller function
 # -----------------------------------------
-while True:
-    clock.tick(60)
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            pygame.quit()
-            exit
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_ESCAPE:
-                pygame.quit()
-                exit
-        elif event.type == pygame.MOUSEBUTTONDOWN:
-            if event.button == 4:
-                scale += 5
-            elif event.button == 5:
-                scale -= 5
-
-    keys = pygame.key.get_pressed()
-    if True in keys:
-        # ---------------
+def shape_controller(keys, x_angle, y_angle, z_angle):
     # Rotating
     if keys[pygame.K_RIGHT]:
         y_angle += 0.01
@@ -95,6 +75,34 @@ while True:
     if keys[pygame.K_e]:
         for point in points:
             point[0,2] += 0.05
+    
+    return x_angle, y_angle, z_angle
+
+
+clock = pygame.time.Clock()
+
+# -----------------------------------------
+# Main flow of the program
+# -----------------------------------------
+while True:
+    clock.tick(60)
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            exit
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE:
+                pygame.quit()
+                exit
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            if event.button == 4:
+                scale += 5
+            elif event.button == 5:
+                scale -= 5
+
+    keys = pygame.key.get_pressed()
+    if True in keys:
+        x_angle, y_angle, z_angle = shape_controller(keys, x_angle, y_angle, z_angle)
 
     # Rotation matrices
     rotation_x = np.matrix([
