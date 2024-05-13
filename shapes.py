@@ -2,30 +2,13 @@ import numpy as np
 
 PHI = (1 + 5 ** 0.5) / 2
 
-class Vertex:
-    id = 0
-    postion = []
-
-    def __init__(self, id, position):
-        self.position = position
-        self.id = id
-
-    def get_id(self):
-        return self.id
-
-    def get_coordinates(self):
-        return self.position
-
 class Polyhedron:
     points = []
     surfaces = []
     connections = []
 
     def get_points(self):
-        vertices = []
-        for point in self.points:
-            vertices.append(point.get_coordinates())
-        return vertices
+        return self.points
     
     def get_connections(self):
         return self.connections
@@ -46,14 +29,14 @@ class Polyhedron:
 
 class Cube(Polyhedron):
     def __init__(self):
-        self.points.append(np.matrix([-1.0, -1.0, 1.0]))
-        self.points.append(np.matrix([1.0, -1.0, 1.0]))
-        self.points.append(np.matrix([1.0,  1.0, 1.0]))
-        self.points.append(np.matrix([-1.0, 1.0, 1.0]))
-        self.points.append(np.matrix([-1.0, -1.0, -1.0]))
-        self.points.append(np.matrix([1.0, -1.0, -1.0]))
-        self.points.append(np.matrix([1.0, 1.0, -1.0]))
-        self.points.append(np.matrix([-1.0, 1.0, -1.0]))
+        self.points.append(([-1.0, -1.0, 1.0]))
+        self.points.append(([1.0, -1.0, 1.0]))
+        self.points.append(([1.0,  1.0, 1.0]))
+        self.points.append(([-1.0, 1.0, 1.0]))
+        self.points.append(([-1.0, -1.0, -1.0]))
+        self.points.append(([1.0, -1.0, -1.0]))
+        self.points.append(([1.0, 1.0, -1.0]))
+        self.points.append(([-1.0, 1.0, -1.0]))
 
         self.surfaces = [
             [1, 5, 6, 2],  # Right
@@ -72,9 +55,11 @@ class Cube(Polyhedron):
 class Smart_Cube(Polyhedron):
     def __init__(self):
         points = self.get_permutations([1] * 3)
-        for id, point in enumerate(points):
-            newPoint = Vertex(id, np.matrix(point))
-            self.points.append(newPoint)
+        self.points = points
+        # self.points = [[point] for point in points]
+        # for point in (points):
+        #     newPoint = np.matrix(point)
+        #     self.points.append(newPoint)
 
         axis_points = [None, None]
         for axis in range(3):
@@ -128,6 +113,12 @@ class Icosahedron(Polyhedron):
             [0, PHI, 1], [0, PHI, -1], [0, -PHI, 1], [0, -PHI, -1],
             [1, 0, PHI], [-1, 0, PHI], [1, 0, -PHI], [-1, 0, -PHI]
         ]
+
+        # [PHI, 1, 0], [PHI, -1, 0]
+        # [PHI, 1, 0], [0, PHI, 1]
+        # [PHI, 1, 0], [0, PHI, -1]
+        # [PHI, 1, 0], [1, 0, PHI]
+        # [PHI, 1, 0], [1, 0, -PHI]
         
         for vertex in vertices:
             self.points.append(np.matrix(vertex))
@@ -139,6 +130,7 @@ class Icosahedron(Polyhedron):
                     self.connections.append([i, j])
 
         self.generate_surfaces()
+        print(self.connections)
     
     def generate_surfaces(self):
         # Define the indices of vertices forming each triangle surface
@@ -151,7 +143,7 @@ class Icosahedron(Polyhedron):
         ]
         return self.surfaces
 
-class Icosahedron2(Polyhedron):
+class Smart_Icosahedron(Polyhedron):
     def __init__(self):
         for i in range(3):
             points = [0] * 3
@@ -160,3 +152,4 @@ class Icosahedron2(Polyhedron):
             all_points = self.get_permutations(points)
             for list in all_points:
                 self.points.append(np.matrix(list))
+            print(all_points)

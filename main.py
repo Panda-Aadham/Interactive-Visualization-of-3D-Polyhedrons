@@ -1,5 +1,6 @@
 import pygame
 import numpy as np
+import vector as vc
 from math import *
 from shapes import *
 
@@ -25,10 +26,9 @@ points = shape.get_points()
 surfaces = shape.get_surfaces()
 connections = shape.get_connections()
 
-projection_matrix = np.matrix([
-    [1,0,0],
-    [0,1,0]
-])
+projection_matrix = [[1,0,0],
+                     [0,1,0],
+                     [0,0,0]]
 
 rotated_points = [
     [n,n,n] for n in range(len(points))
@@ -37,6 +37,9 @@ rotated_points = [
 projected_points = [
     [n,n] for n in range(len(points))
 ]
+
+def dot_product(vector,matrix):
+    return [sum(vector[j] * matrix[i][j] for j in range(len(vector))) for i in range(len(matrix))]
 
 # -----------------------------------------
 # Shape controller function
@@ -105,23 +108,17 @@ while True:
         x_angle, y_angle, z_angle = shape_controller(keys, x_angle, y_angle, z_angle)
 
     # Rotation matrices
-    rotation_x = np.matrix([
-        [1, 0, 0],
-        [0, cos(x_angle), -sin(x_angle)],
-        [0, sin(x_angle), cos(x_angle)],
-    ])
+    rotation_x = [[1, 0, 0],
+                  [0, cos(x_angle), -sin(x_angle)],
+                  [0, sin(x_angle), cos(x_angle)]]
 
-    rotation_y = np.matrix([
-        [cos(y_angle), 0, sin(y_angle)],
-        [0, 1, 0],
-        [-sin(y_angle), 0, cos(y_angle)],
-    ])
+    rotation_y = [[cos(y_angle), 0, sin(y_angle)],
+                  [0, 1, 0],
+                  [-sin(y_angle), 0, cos(y_angle)]]
 
-    rotation_z = np.matrix([
-        [cos(z_angle), -sin(z_angle), 0],
-        [sin(z_angle), cos(z_angle), 0],
-        [0, 0, 1]
-    ])
+    rotation_z = [[cos(z_angle), -sin(z_angle), 0],
+                  [sin(z_angle), cos(z_angle), 0],
+                  [0, 0, 1]]
         
     screen.fill(BLACK)
 
@@ -129,36 +126,36 @@ while True:
     # Draw each vertex
     # -----------------------------------------
     for index, point in enumerate(points):
-        rotated_points[index] = np.dot(rotation_x, point.reshape(3,1))
-        rotated_points[index] = np.dot(rotation_y, rotated_points[index])
-        rotated_points[index] = np.dot(rotation_z, rotated_points[index])
-        projected_2d = np.dot(projection_matrix, rotated_points[index])
+        rotated_points[index] = dot_product(point, rotation_x)
+        rotated_points[index] = dot_product(rotated_points[index], rotation_y)
+        rotated_points[index] = dot_product(rotated_points[index], rotation_z)
+        projected_2d = dot_product(rotated_points[index], projection_matrix)
 
-        x = int(projected_2d.item(0) * scale) + circle_pos[0]
-        y = int(projected_2d[1].item(0) * scale) + circle_pos[1]
+        x = int(projected_2d[0] * scale) + circle_pos[0]
+        y = int(projected_2d[1] * scale) + circle_pos[1]
         projected_points[index] = [x,y]
-        # pygame.draw.circle(screen, CYAN, (x,y), 5)
+        pygame.draw.circle(screen, CYAN, (x,y), 5)
     
     # -----------------------------------------
     # Connect the vertices
     # -----------------------------------------
-    # for connection in connections:
-    #     first_point = (projected_points[connection[0]][0], projected_points[connection[0]][1])
-    #     second_point = (projected_points[connection[1]][0], projected_points[connection[1]][1])
-    #     pygame.draw.line(screen, WHITE, first_point, second_point)
+    for connection in connections:
+        first_point = (projected_points[connection[0]][0], projected_points[connection[0]][1])
+        second_point = (projected_points[connection[1]][0], projected_points[connection[1]][1])
+        pygame.draw.line(screen, WHITE, first_point, second_point)
     
     # -----------------------------------------
     # Draw the surface and its shade
     # -----------------------------------------
-    for surf in range(1, len(surfaces) + 1):
-        # Get the surface normal
-        surface_normal = np.cross(rotated_points[surfaces[surf - 1][1]].flatten() - rotated_points[surfaces[surf - 1][0]].flatten(),
-                                  rotated_points[surfaces[surf - 1][2]].flatten() - rotated_points[surfaces[surf - 1][0]].flatten())
+    # for surf in range(1, len(surfaces) + 1):
+    #     # Get the surface normal
+    #     surface_normal = np.cross(rotated_points[surfaces[surf - 1][1]].flatten() - rotated_points[surfaces[surf - 1][0]].flatten(),
+    #                               rotated_points[surfaces[surf - 1][2]].flatten() - rotated_points[surfaces[surf - 1][0]].flatten())
         
-        # Draw the surface with adjusted color
-        if (surface_normal[0][2] > 0):
-            light_intensity = 130 + -surface_normal[0][1] * 25
-            surface_color = (light_intensity, light_intensity, light_intensity)
-            pygame.draw.polygon(screen, surface_color, [projected_points[i] for i in surfaces[surf - 1]])
+    #     # Draw the surface with adjusted color
+    #     if (surface_normal[0][2] > 0):
+    #         light_intensity = 130 + -surface_normal[0][1] * 25
+    #         surface_color = (light_intensity, light_intensity, light_intensity)
+    #         pygame.draw.polygon(screen, surface_color, [projected_points[i] for i in surfaces[surf - 1]])
 
     pygame.display.update()
