@@ -1,6 +1,4 @@
 import pygame
-import numpy as np
-import vector as vc
 from math import *
 from shapes import *
 
@@ -21,7 +19,7 @@ circle_pos = [WIDTH/2, HEIGHT/2]
 pygame.display.set_caption("3D Visualization of Shapes in Python")
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 
-shape = Smart_Cube()
+shape = Smart_Icosahedron()
 points = shape.get_points()
 surfaces = shape.get_surfaces()
 connections = shape.get_connections()
@@ -62,25 +60,24 @@ def shape_controller(keys, x_angle, y_angle, z_angle):
     # Positioning
     if keys[pygame.K_a]:
         for point in points:
-            point[0,0] -= 0.05
+            point[0] -= 0.05
     if keys[pygame.K_d]:
         for point in points:
-            point[0,0] += 0.05
+            point[0] += 0.05
     if keys[pygame.K_s]:
         for point in points:
-            point[0,1] -= 0.05
+            point[1] -= 0.05
     if keys[pygame.K_w]:
         for point in points:
-            point[0,1] += 0.05
+            point[1] += 0.05
     if keys[pygame.K_q]:
         for point in points:
-            point[0,2] -= 0.05
+            point[2] -= 0.05
     if keys[pygame.K_e]:
         for point in points:
-            point[0,2] += 0.05
+            point[2] += 0.05
     
     return x_angle, y_angle, z_angle
-
 
 clock = pygame.time.Clock()
 

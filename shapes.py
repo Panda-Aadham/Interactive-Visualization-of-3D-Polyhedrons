@@ -1,4 +1,5 @@
 import numpy as np
+from math import sqrt
 
 PHI = (1 + 5 ** 0.5) / 2
 
@@ -56,11 +57,7 @@ class Smart_Cube(Polyhedron):
     def __init__(self):
         points = self.get_permutations([1] * 3)
         self.points = points
-        # self.points = [[point] for point in points]
-        # for point in (points):
-        #     newPoint = np.matrix(point)
-        #     self.points.append(newPoint)
-
+        
         axis_points = [None, None]
         for axis in range(3):
             # Filter the vertices by the current axis
@@ -120,8 +117,8 @@ class Icosahedron(Polyhedron):
         # [PHI, 1, 0], [1, 0, PHI]
         # [PHI, 1, 0], [1, 0, -PHI]
         
-        for vertex in vertices:
-            self.points.append(np.matrix(vertex))
+        # for vertex in vertices:
+        self.points = vertices
 
         for i in range(len(vertices)):
             for j in range(i + 1, len(vertices)):
@@ -130,7 +127,6 @@ class Icosahedron(Polyhedron):
                     self.connections.append([i, j])
 
         self.generate_surfaces()
-        print(self.connections)
     
     def generate_surfaces(self):
         # Define the indices of vertices forming each triangle surface
@@ -149,7 +145,14 @@ class Smart_Icosahedron(Polyhedron):
             points = [0] * 3
             points[i] = PHI
             points[0 if i==2 else i+1] = 1
-            all_points = self.get_permutations(points)
-            for list in all_points:
-                self.points.append(np.matrix(list))
-            print(all_points)
+            for point in self.get_permutations(points):
+                self.points.append(point)
+
+        # Use euclidean distance formula to get connections
+        points = self.points
+        for x in range(len(points)):
+            for y in range(x + 1, len(points)):
+                distance_sq = [(points[x][i] - points[y][i]) ** 2 for i in range(len(points[x]))]
+                distance = sqrt(sum(distance_sq))
+                if distance == 2:
+                    self.connections.append([x,y])
