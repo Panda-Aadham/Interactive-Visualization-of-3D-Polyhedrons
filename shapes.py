@@ -63,15 +63,6 @@ class Cube(Polyhedron):
             [0, 1, 2, 3],  # Front
             [5, 4, 7, 6],  # Back
         ]
-        
-        # 0 -> 4
-        # 1 -> 3
-        # 2 -> 7
-        # 3 -> 1
-        # 4 -> 2
-        # 5 -> 5
-        # 6 -> 6
-        # 7 -> 0
 
         for p in range(4):
             self.connections.append([p, (p+1) % 4])
@@ -97,30 +88,16 @@ class Smart_Cube(Polyhedron):
                 self.connections.append([points.index(sorted_points[0]), points.index(sorted_points[1])])
                 self.connections.append([points.index(sorted_points[2]), points.index(sorted_points[3])])
                 # Create the surfaces
-                surface = [[1] * 3] if sign == 0 else [[-1] * 3]
+                surfaces = []
+                surface_points = [[1] * 3] if sign == 0 else [[-1] * 3]
                 first_axis = (axis + 1 if axis + 1 < 3 else 0) if sign == 0 else (axis - 1 if axis - 1 > -1 else 2)
                 second_axis = 3 - (axis + first_axis)
-                surface.append(surface[0].copy())
-                surface[1][first_axis] *= -1
-                surface.append(surface[1].copy())
-                surface[2][second_axis] *= -1
-                surface.append(surface[2].copy())
-                surface[3][first_axis] *= -1
-                surfaces = []
-                for pos in surface:
-                    surfaces.append(points.index(pos))
+                surfaces.append(points.index(surface_points[0]))
+                for i in range(3):
+                    surface_points.append(surface_points[i].copy())
+                    surface_points[i+1][first_axis if i % 2 == 0 else second_axis] *= -1
+                    surfaces.append(points.index(surface_points[i+1]))
                 self.surfaces.append(surfaces)
-
-        # self.surfaces = [
-        #     [3, 5, 6, 7],  # Right
-        #     [2, 4, 1, 0],  # Left
-        #     [6, 0, 1, 7],   # Top
-        #     [2, 5, 3, 4],  # Bottom
-        #     [4, 3, 7, 1],  # Front
-        #     [5, 2, 0, 6],  # Back
-        # ]
-        for surface in self.surfaces:
-            print(points[surface[0]], points[surface[1]], points[surface[2]], points[surface[3]])
 
 class Pyramid(Polyhedron):
     def __init__(self):
