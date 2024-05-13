@@ -147,15 +147,27 @@ while True:
     # -----------------------------------------
     # Draw the surface and its shade
     # -----------------------------------------
-    # for surf in range(1, len(surfaces) + 1):
-    #     # Get the surface normal
-    #     surface_normal = np.cross(rotated_points[surfaces[surf - 1][1]].flatten() - rotated_points[surfaces[surf - 1][0]].flatten(),
-    #                               rotated_points[surfaces[surf - 1][2]].flatten() - rotated_points[surfaces[surf - 1][0]].flatten())
+    for surface in range(len(surfaces)):
+        # Calculate the two vectors to use in cross product
+        vector1, vector2 = [0]*3, [0]*3
+        for index in range(3):
+            vector1[index] = rotated_points[surfaces[surface][1]][index] - rotated_points[surfaces[surface][0]][index]
+            vector2[index] = rotated_points[surfaces[surface][2]][index] - rotated_points[surfaces[surface][0]][index]
         
-    #     # Draw the surface with adjusted color
-    #     if (surface_normal[0][2] > 0):
-    #         light_intensity = 130 + -surface_normal[0][1] * 25
-    #         surface_color = (light_intensity, light_intensity, light_intensity)
-    #         pygame.draw.polygon(screen, surface_color, [projected_points[i] for i in surfaces[surf - 1]])
+        # Calculate surface normal using cross product:
+        # x = v1[1] * v2[2] - v1[2] * v2[1]
+        # y = v1[2] * v2[0] - v1[0] * v2[2]
+        # z = v1[0] * v2[1] - v1[1] * v2[0]
+        surface_normal = []
+        for axis in range(3):
+            first = axis + 1 if axis + 1 < 3 else 0
+            second = first + 1 if first + 1 < 3 else 0
+            surface_normal.append((vector1[first] * vector2[second]) - (vector1[second] * vector2[first]))
+        
+        # Draw the surface with adjusted color
+        if (surface_normal[2] > 0):
+            light_intensity = 130 + -surface_normal[1] * 25
+            surface_color = (light_intensity, light_intensity, light_intensity)
+            pygame.draw.polygon(screen, surface_color, [projected_points[i] for i in surfaces[surface]])
 
     pygame.display.update()
