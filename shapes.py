@@ -4,12 +4,12 @@ from math import sqrt
 PHI = (1 + 5 ** 0.5) / 2
 
 class Polyhedron:
-    points = []
+    points = {}
     surfaces = []
     connections = []
 
     def get_points(self):
-        return self.points
+        return self.points.values()
     
     def get_connections(self):
         return self.connections
@@ -30,14 +30,14 @@ class Polyhedron:
 
 class Cube(Polyhedron):
     def __init__(self):
-        self.points.append(([-1.0, -1.0, 1.0]))
-        self.points.append(([1.0, -1.0, 1.0]))
-        self.points.append(([1.0,  1.0, 1.0]))
-        self.points.append(([-1.0, 1.0, 1.0]))
-        self.points.append(([-1.0, -1.0, -1.0]))
-        self.points.append(([1.0, -1.0, -1.0]))
-        self.points.append(([1.0, 1.0, -1.0]))
-        self.points.append(([-1.0, 1.0, -1.0]))
+        self.points[0] = [-1.0, -1.0, 1.0]
+        self.points[1] = [1.0, -1.0, 1.0]
+        self.points[2] = [1.0,  1.0, 1.0]
+        self.points[3] = [-1.0, 1.0, 1.0]
+        self.points[4] = [-1.0, -1.0, -1.0]
+        self.points[5] = [1.0, -1.0, -1.0]
+        self.points[6] = [1.0, 1.0, -1.0]
+        self.points[7] = [-1.0, 1.0, -1.0]
 
         self.surfaces = [
             [1, 5, 6, 2],  # Right
@@ -56,7 +56,8 @@ class Cube(Polyhedron):
 class Smart_Cube(Polyhedron):
     def __init__(self):
         points = self.get_permutations([1] * 3)
-        self.points = points
+        for index, point in enumerate(points):
+            self.points[index] = point
         
         axis_points = [None, None]
         for axis in range(3):
@@ -83,11 +84,11 @@ class Smart_Cube(Polyhedron):
 
 class Pyramid(Polyhedron):
     def __init__(self):
-        self.points.append(np.matrix([0, -1, 0]))
-        self.points.append(np.matrix([-1, 1, 1]))
-        self.points.append(np.matrix([1, 1, 1]))
-        self.points.append(np.matrix([-1, 1, -1]))
-        self.points.append(np.matrix([1, 1, -1]))
+        self.points[0] = [0, -1, 0]
+        self.points[1] = [-1, 1, 1]
+        self.points[2] = [1, 1, 1]
+        self.points[3] = [-1, 1, -1]
+        self.points[4] = [1, 1, -1]
 
         self.surfaces = [
             [2, 1, 0],
@@ -117,9 +118,10 @@ class Icosahedron(Polyhedron):
         # [PHI, 1, 0], [1, 0, PHI]
         # [PHI, 1, 0], [1, 0, -PHI]
         
-        # for vertex in vertices:
-        self.points = vertices
+        for index, vertex in enumerate(vertices):
+            self.points[index] = vertex
 
+        # Compute the connections
         for i in range(len(vertices)):
             for j in range(i + 1, len(vertices)):
                 distance = np.linalg.norm(np.array(vertices[i]) - np.array(vertices[j]))
@@ -145,8 +147,9 @@ class Smart_Icosahedron(Polyhedron):
             points = [0] * 3
             points[i] = PHI
             points[0 if i==2 else i+1] = 1
-            for point in self.get_permutations(points):
-                self.points.append(point)
+            all_points = self.get_permutations(points)
+            for index, point in enumerate(all_points):
+                self.points[index + (i * len(all_points))] = point
 
         # Use euclidean distance formula to get connections
         points = self.points
@@ -156,3 +159,4 @@ class Smart_Icosahedron(Polyhedron):
                 distance = sqrt(sum(distance_sq))
                 if distance == 2:
                     self.connections.append([x,y])
+        
