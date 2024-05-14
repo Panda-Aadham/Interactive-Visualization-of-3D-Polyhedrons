@@ -159,4 +159,32 @@ class Smart_Icosahedron(Polyhedron):
                 distance = sqrt(sum(distance_sq))
                 if distance == 2:
                     self.connections.append([x,y])
+
+        self.find_min_sides()
+
+    def find_min_sides(self):
+        vertex_to_find, distances = 0, []
+        paths_taken = [self.connections[0]]
+        current_vertex = paths_taken[0][1]
+        distances.append(self.dfs(vertex_to_find, current_vertex, paths_taken, 1))
+        print(distances)
         
+        # for edge in edges:
+        #     if edge not in paths_taken:
+        #         current_vertex = edge[0 if edges[0] != current_vertex else 1]
+        #         paths_taken.append(edge)
+        #         break
+
+    def dfs(self, find, current_vertex, paths_taken, steps):
+        edges = [edge for edge in self.connections if current_vertex in edge]
+        distances = []
+        print(edges)
+        for edge in edges:
+            print("pt", paths_taken)
+            if edge not in paths_taken:
+                if find in edge:
+                    return steps + 1
+                else:
+                    current_vertex = edge[0 if current_vertex != edge[0] else 1]
+                    distances.append(self.dfs(find, current_vertex, paths_taken + [edge], steps + 1))
+        return distances
