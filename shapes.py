@@ -163,4 +163,23 @@ class Smart_Icosahedron(Polyhedron):
         # Euler's formula: Vertices − Edges + Faces = 2
         num_surfaces = -1 * (len(points) - len(self.connections) - 2)
         side_in_surface = (2 * len(self.connections)) // num_surfaces
-        print(side_in_surface)
+
+        for point in points:
+            print("________________________________________________")
+            self.find_surface(point, [], point, 1, side_in_surface)
+
+        print(self.surfaces)
+
+    def find_surface(self, current_node, visited, target, count, max_count):
+        connected = [edge[0 if current_node != edge[0] else 1] for edge in self.connections if current_node in edge]
+        connected = [vertex for vertex in connected if vertex not in visited]
+        print(current_node)
+        if target in connected and len(visited) == max_count - 1:
+            self.connections.append(visited)
+            return True
+        elif count > max_count:
+            return
+        else:
+            for vertex in connected:
+                self.find_surface(vertex, visited + [vertex], target, count + 1, max_count)
+                
