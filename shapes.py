@@ -165,17 +165,29 @@ class Smart_Icosahedron(Polyhedron):
         side_in_surface = (2 * len(self.connections)) // num_surfaces
 
         for point in points:
-            print("________________________________________________")
             self.find_surface(point, [], point, 1, side_in_surface)
 
-        print(self.surfaces)
+        sorted_surfaces = []
+        for index, surface in enumerate(self.surfaces):
+            sorted = []
+            for i in range(len(surface)):
+                sorted.append(min(surface))
+                surface.remove(min(surface))
+            sorted_surfaces.append(sorted)
+
+        unique_sets = set(map(tuple, sorted_surfaces))
+
+        # Convert tuples back to lists
+        unique_lists = [list(t) for t in unique_sets]
+
+        print(len(unique_lists))
+
 
     def find_surface(self, current_node, visited, target, count, max_count):
         connected = [edge[0 if current_node != edge[0] else 1] for edge in self.connections if current_node in edge]
         connected = [vertex for vertex in connected if vertex not in visited]
-        print(current_node)
         if target in connected and len(visited) == max_count - 1:
-            self.connections.append(visited)
+            self.surfaces.append(visited + [target])
             return True
         elif count > max_count:
             return
