@@ -181,6 +181,9 @@ class Smart_Icosahedron(Polyhedron):
         self.surfaces = [list(t) for t in set(map(tuple, sorted_surfaces))]
 
         # Diagonal division of the axis
+        # x => -1
+        # y => -1
+        # z => 1
 
         for surface in self.surfaces:
             surface_points = [points[point] for point in surface]
