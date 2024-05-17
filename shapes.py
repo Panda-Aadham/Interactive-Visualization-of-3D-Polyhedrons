@@ -180,6 +180,8 @@ class Smart_Icosahedron(Polyhedron):
         # Get unique surfaces from sorted lists
         self.surfaces = [list(t) for t in set(map(tuple, sorted_surfaces))]
 
+        # Diagonal division of the axis
+
         for surface in self.surfaces:
             surface_points = [points[point] for point in surface]
             x_avg = sum([point[0] for point in surface_points])
