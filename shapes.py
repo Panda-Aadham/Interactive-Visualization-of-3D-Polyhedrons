@@ -181,6 +181,7 @@ class Smart_Icosahedron(Polyhedron):
         self.surfaces = [list(t) for t in set(map(tuple, sorted_surfaces))]
 
         # Diagonal division of the axis
+        # Create the plane
         # x => -1
         # y => -1
         # z => 1
