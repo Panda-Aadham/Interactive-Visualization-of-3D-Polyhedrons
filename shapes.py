@@ -186,10 +186,10 @@ class Smart_Icosahedron(Polyhedron):
         # y => -1
         # z => 1
 
-        for index, surface in enumerate(self.surfaces):
-            if index == 0:
-                surf_points = [points[i] for i in surface]
-                for
+        # for index, surface in enumerate(self.surfaces):
+        #     if index == 0:
+        #         surf_points = [points[i] for i in surface]
+                
 
     def find_surface(self, current_node, visited, target, count, max_count):
         connected = [edge[0 if current_node != edge[0] else 1] for edge in self.connections if current_node in edge]
