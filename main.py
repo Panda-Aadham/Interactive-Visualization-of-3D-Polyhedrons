@@ -165,6 +165,6 @@ while True:
         if (surface_normal[2] > 0):
             light_intensity = 130 + -surface_normal[1] * 25
             surface_color = (light_intensity, light_intensity, light_intensity)
-            pygame.draw.polygon(screen, surface_color, [projected_points[i] for i in surfaces[surface]])
+            # pygame.draw.polygon(screen, surface_color, [projected_points[i] for i in surfaces[surface]])
 
     pygame.display.update()
